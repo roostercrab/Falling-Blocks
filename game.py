@@ -31,7 +31,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # FUNCTIONS
 def drop_enemies(enemy_list):
-  if len(enemy_list) < 10:
+  delay = random.random()
+  if len(enemy_list) < 10 and delay < 0.1:
     x_pos = random.randint(0, SCREEN_WIDTH - enemy_size)
     y_pos = 0
     enemy_list.append([x_pos, y_pos])
