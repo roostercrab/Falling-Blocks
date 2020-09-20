@@ -43,11 +43,12 @@ def draw_enemies(enemy_list):
       pygame.draw.rect(screen, BLUE, (enemy_x_coord, enemy_y_coord, enemy_size, enemy_size))
 
 def update_enemy_positions(enemy_list):
+  print(enemy_list)
   for idx, enemy_pos in enumerate(enemy_list):
-    enemy_x_coord = enemy_pos[0]
     enemy_y_coord = enemy_pos[1]
+    enemy_y_coord = int(enemy_y_coord)
     if enemy_y_coord >= 0 and enemy_y_coord < SCREEN_HEIGHT:
-      enemy_y_coord += ENEMY_SPEED
+      enemy_pos[1] += ENEMY_SPEED
     else:
       enemy_list.pop(idx)
 
