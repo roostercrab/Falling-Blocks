@@ -24,11 +24,48 @@ enemy_size = 50
 enemy_pos = [random.randint(0, SCREEN_WIDTH - enemy_size), 0]
 enemy_x_coord = enemy_pos[0]
 enemy_y_coord = enemy_pos[1]
+enemy_list = [enemy_pos]
 
 # DEFINE SCREEN
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # FUNCTIONS
+def drop_enemies(enemy_list):
+  if len(enemy_list) < 10:
+    x_pos = random.randint(0, SCREEN_WIDTH - enemy_size)
+    y_pos = 0
+    enemy_list.append([x_pos, y_pos])
+
+def draw_enemies(enemy_list):
+  for enemy_pos in enemy_list:
+      enemy_x_coord = enemy_pos[0]
+      enemy_y_coord = enemy_pos[1]
+      pygame.draw.rect(screen, BLUE, (enemy_x_coord, enemy_y_coord, enemy_size, enemy_size))
+
+def update_enemy_positions(enemy_list):
+  for idx, enemy_pos in enumerate(enemy_list):
+    enemy_x_coord = enemy_pos[0]
+    enemy_y_coord = enemy_pos[1]
+    if enemy_y_coord >= 0 and enemy_y_coord < SCREEN_HEIGHT:
+      enemy_y_coord += ENEMY_SPEED
+    else:
+      enemy_list.pop(idx)
+
+def collision_check(enemy_list, player_pos):
+  player_x_coord = player_pos[0]
+  player_y_coord = player_pos[1]
+  player_x_coord = int(player_x_coord)
+  player_y_coord = int(player_y_coord)
+  for enemy_pos in enemy_list:
+    enemy_x_coord = enemy_pos[0]
+    enemy_y_coord = enemy_pos[1]
+    enemy_x_coord = int(enemy_x_coord)
+    enemy_y_coord = int(enemy_y_coord)
+
+    if detect_collision(player_x_coord, player_y_coord, enemy_x_coord, enemy_y_coord):
+      return True
+  return False
+
 def detect_collision(player_x_coord, player_y_coord, enemy_x_coord, enemy_y_coord):
   player_x_coord = int(player_x_coord)
   player_y_coord = int(player_y_coord)
@@ -78,21 +115,18 @@ while not game_over:
   # PAINT BACKGROUND
   screen.fill(BACKGROUND_COLOR)
 
-  # ENEMY BLOCK MOVEMENT
-  if enemy_y_coord >= 0 and enemy_y_coord < SCREEN_HEIGHT:
-    enemy_y_coord += ENEMY_SPEED
-  else:
-    enemy_x_coord = random.randint(0, SCREEN_WIDTH - enemy_size)
-    enemy_y_coord = 0
+  # ENEMY IMAGE DROP and DRAW
+  drop_enemies(enemy_list)
 
-  if detect_collision(player_x_coord, player_y_coord, enemy_x_coord, enemy_y_coord):
+  update_enemy_positions(enemy_list)
+
+  if collision_check(enemy_list, player_pos):
     game_over = True
+
+  draw_enemies(enemy_list)
 
   # PLAYER IMAGE DRAW
   pygame.draw.rect(screen, RED, (player_x_coord, player_y_coord, player_size, player_size))
-
-  # ENEMY IMAGE DRAW
-  pygame.draw.rect(screen, BLUE, (enemy_x_coord, enemy_y_coord, enemy_size, enemy_size))
 
   # UPDATE SCREEN
   clock.tick(30)
