@@ -4,6 +4,7 @@ import sys
 
 pygame.init()
 clock = pygame.time.Clock()
+myFont = pygame.font.SysFont("monospace", 35)
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -18,6 +19,7 @@ player_size = 50
 player_pos = [SCREEN_WIDTH/2, SCREEN_HEIGHT-2*player_size]
 player_x_coord = player_pos[0]
 player_y_coord = player_pos[1]
+score = 0
 
 # INITIALLY DEFINE ENEMY
 enemy_size = 50
@@ -30,6 +32,17 @@ enemy_list = [enemy_pos]
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # FUNCTIONS
+def set_level(score, SPEED):
+  if score < 10:
+    SPEED = 10
+  elif score < 20:
+    SPEED = 20
+  elif score < 30:
+    SPEED = 30
+  else:
+    SPEED = 40
+  return SPEED
+
 def drop_enemies(enemy_list):
   delay = random.random()
   if len(enemy_list) < 10 and delay < 0.1:
@@ -43,8 +56,7 @@ def draw_enemies(enemy_list):
       enemy_y_coord = enemy_pos[1]
       pygame.draw.rect(screen, BLUE, (enemy_x_coord, enemy_y_coord, enemy_size, enemy_size))
 
-def update_enemy_positions(enemy_list):
-  print(enemy_list)
+def update_enemy_positions(enemy_list, score):
   for idx, enemy_pos in enumerate(enemy_list):
     enemy_y_coord = enemy_pos[1]
     enemy_y_coord = int(enemy_y_coord)
@@ -52,6 +64,8 @@ def update_enemy_positions(enemy_list):
       enemy_pos[1] += ENEMY_SPEED
     else:
       enemy_list.pop(idx)
+      score += 1
+  return score
 
 def collision_check(enemy_list, player_pos):
   player_x_coord = player_pos[0]
@@ -92,7 +106,6 @@ def detect_collision(player_x_coord, player_y_coord, enemy_x_coord, enemy_y_coor
     print("GAME OVER")
     return True
   else:
-    print("game not over")
     return False
 
 # GAME LOOP
@@ -120,7 +133,12 @@ while not game_over:
   # ENEMY IMAGE DROP and DRAW
   drop_enemies(enemy_list)
 
-  update_enemy_positions(enemy_list)
+  text = "Score: " + str(score)
+  label = myFont.render(text, 1, (255,255,0))
+  screen.blit(label, (SCREEN_WIDTH-200, SCREEN_HEIGHT-40))
+
+  score = update_enemy_positions(enemy_list, score)
+  print(score)
 
   if collision_check(enemy_list, player_pos):
     game_over = True
